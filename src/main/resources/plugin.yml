@@ -1,0 +1,23 @@
+name: VoxelPort
+main: com.thevoxelbox.voxelport.VoxelPort
+version: 2.046
+website: http://www.voxelwiki.com/minecraft/index.php/VoxelPort
+author: przerwap
+description: >
+             Simulates real world travel.
+commands:
+  vworld:
+    description: Needs a description.
+    usage: |
+           /<command>
+           Example: /<command> - need to write the help.
+  ctime:
+    description: Needs a description.
+    usage: |
+           /<command>
+           Example: /<command> - need to write the help.
+  vp:
+    description: Needs a description.
+    usage: |
+           /<command>
+           Example: /<command> - need to write the help.
