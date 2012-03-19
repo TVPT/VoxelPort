@@ -51,7 +51,7 @@ public class VoxelPort extends JavaPlugin {
 
 
             if (commandName.equals("vworld")) {
-                p.sendMessage("Herp derp " + p.getWorld().getName());
+                p.sendMessage(ChatColor.GOLD + "Current World: " + ChatColor.GREEN + p.getWorld().getName());
                 return true;
             }
             if (commandName.equals("ctime")) {
