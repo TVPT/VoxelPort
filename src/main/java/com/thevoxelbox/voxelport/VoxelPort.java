@@ -1,4 +1,4 @@
-package com.thevoxelbox.bukkit.port;
+package com.thevoxelbox.voxelport;
 
 import java.io.File;
 import java.util.HashSet;

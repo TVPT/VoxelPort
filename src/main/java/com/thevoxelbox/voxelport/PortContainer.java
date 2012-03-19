@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.thevoxelbox.bukkit.port;
+package com.thevoxelbox.voxelport;
 
 //import com.thevoxelbox.bukkit.port.NPC.PortNPC;
 import java.util.ArrayList;

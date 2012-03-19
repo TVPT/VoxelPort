@@ -1,4 +1,4 @@
-package com.thevoxelbox.bukkit.port;
+package com.thevoxelbox.voxelport;
 
 //import com.thevoxelbox.bukkit.port.NPC.NpcSpawner;
 //import com.thevoxelbox.bukkit.port.NPC.PortNPC;

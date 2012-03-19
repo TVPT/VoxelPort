@@ -1,4 +1,4 @@
-package com.thevoxelbox.bukkit.port;
+package com.thevoxelbox.voxelport;
 
 import java.io.DataInputStream;
 import java.io.EOFException;
