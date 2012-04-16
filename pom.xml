@@ -4,7 +4,7 @@
 
   <groupId>com.thevoxelbox</groupId>
   <artifactId>VoxelPort</artifactId>
-  <version>2.046-SNAPSHOT</version>
+  <version>2.047-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>VoxelPort</name>
@@ -18,15 +18,8 @@
     
     <dependency>
       <groupId>org.bukkit</groupId>
-      <artifactId>bukkit</artifactId>
-      <version>1.2.3-R0.2-SNAPSHOT</version>
-      <type>jar</type>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.2.3-R0.2-SNAPSHOT</version>
+      <version>1.2.5-R1.0</version>
       <type>jar</type>
     </dependency>
   </dependencies>
