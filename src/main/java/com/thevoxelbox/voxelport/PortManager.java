@@ -270,8 +270,17 @@ public class PortManager {
                 NewPort np = getPort(p.getLocation());
 
                 if (np == null) {
-                    p.sendMessage(ChatColor.RED + "You are not standing inside a VoxelPort!");
-                    return;
+                    NewPort npl = getPort(new HitBlox(p, p.getWorld()).getTargetBlock().getLocation());
+                    
+                    if (npl == null) {
+                        p.sendMessage(ChatColor.RED + "You are not standing or looking at a VoxelPort!");
+                        return;
+                    } else {
+                        pd.p = npl;
+                        data.put(p.getName(), pd);
+                        p.sendMessage(ChatColor.GREEN + "Current VoxelPort has been set to VoxelPort you are looking at (" + npl.getName() + ")");
+                        return;
+                    }
                 } else {
                     pd.p = np;
                     data.put(p.getName(), pd);
@@ -399,7 +408,7 @@ public class PortManager {
             }
         }
         /*
-         * 
+         *
          */
         if (s[0].equalsIgnoreCase("targetWorld")) {
             if (s.length < 3) {
@@ -465,7 +474,7 @@ public class PortManager {
             return;
         }
         /*
-         * 
+         *
          */
         if (s[0].equalsIgnoreCase("info")) {
             if (s.length < 2) {
@@ -668,7 +677,7 @@ public class PortManager {
                         } else {
                             int i;
                             char c = s[x].charAt(2);
-                            
+
                             switch (c) {
                                 case 'a':
                                     i = 10;
@@ -723,7 +732,7 @@ public class PortManager {
             }
         }
         /*
-         * 
+         *
          */
         if (s[0].equalsIgnoreCase("delete")) {
             if (s.length < 2) {
@@ -748,7 +757,7 @@ public class PortManager {
             }
         }
         /*
-         * 
+         *
          */
         if (s[0].equalsIgnoreCase("zone")) {
             PortData pd = data.get(p.getName());
