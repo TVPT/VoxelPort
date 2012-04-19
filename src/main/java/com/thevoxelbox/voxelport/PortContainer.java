@@ -59,10 +59,8 @@ public class PortContainer {
                             p.getInventory().clear(p.getInventory().getHeldItemSlot());
 
                             PortTick.registerTicket(p, n);
+                            return;
                         }
-                        return;
-                    } else {
-                        return;
                     }
                 } else {
                     if (n.instant()) {
@@ -73,22 +71,22 @@ public class PortContainer {
                         n.welcomePlayer(p);
 
                         PortTick.registerTicket(p, n);
+                        return;
                     }
-                    return;
                 }
             }
         }
     }
 
-    /*public PortNPC matchNpcId(int id) {
-    for (newPort n : collection) {
-    PortNPC pn = n.matchNpcId(id);
-    if (pn != null) {
-    return pn;
-    }
-    }
-    return null;
-    }
+    /* public PortNPC matchNpcId(int id) {
+     * for (newPort n : collection) {
+     * PortNPC pn = n.matchNpcId(id);
+     * if (pn != null) {
+     * return pn;
+     * }
+     * }
+     * return null;
+     * }
      *
      */
     public NewPort getPort(Location l) {
