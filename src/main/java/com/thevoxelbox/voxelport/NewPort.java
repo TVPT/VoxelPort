@@ -65,7 +65,7 @@ public class NewPort {
 
         @Override
         public void run() {
-            p.teleport(l, TeleportCause.ENDER_PEARL);
+            p.teleport(l, TeleportCause.PLUGIN);
             p.sendMessage(ChatColor.DARK_AQUA + "Woosh!");
             int chunkx = p.getWorld().getChunkAt(l.getBlock()).getX();
             int chunkz = p.getWorld().getChunkAt(l.getBlock()).getZ();
@@ -337,7 +337,7 @@ public class NewPort {
     }
 
     public void instaPort(Player p, boolean override) {
-        Location targetLocation = this.departLocation;
+        Location targetLocation = departLocation;
         if (targetLocation == null) {
             String targetPortName = PortManager.portTargets.get(this.getName());
             if (targetPortName != null) {
@@ -349,12 +349,12 @@ public class NewPort {
             }
         }
         if (override) {
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(VoxelPort.vp, new MoveEventSucks(p, departLocation));
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(VoxelPort.vp, new MoveEventSucks(p, targetLocation));
         } else {
             if (redstoneKey != null && !redstoneKey.getBlock().isBlockPowered()) {
                 return;
             }
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(VoxelPort.vp, new MoveEventSucks(p, departLocation));
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(VoxelPort.vp, new MoveEventSucks(p, targetLocation));
         }
     }
 

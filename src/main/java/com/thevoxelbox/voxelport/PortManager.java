@@ -392,12 +392,12 @@ public class PortManager {
             }
 
             NewPort np = new NewPort(
-                    (pd.a.getX() > pd.b.getX() ? pd.a.getX() : pd.b.getX()),
-                    (pd.a.getX() < pd.b.getX() ? pd.a.getX() : pd.b.getX()),
-                    (pd.a.getY() > pd.b.getY() ? pd.a.getY() : pd.b.getY()),
-                    (pd.a.getY() < pd.b.getY() ? pd.a.getY() : pd.b.getY()),
-                    (pd.a.getZ() > pd.b.getZ() ? pd.a.getZ() : pd.b.getZ()),
-                    (pd.a.getZ() < pd.b.getZ() ? pd.a.getZ() : pd.b.getZ()),
+                    pd.a.getX(),
+                    pd.b.getX(),
+                    pd.a.getY(),
+                    pd.b.getY(),
+                    pd.a.getZ(),
+                    pd.b.getZ(),
                     pd.a.getWorld().getName(),
                     pd.a.getWorld().getEnvironment(),
                     s[1]);
