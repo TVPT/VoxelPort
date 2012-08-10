@@ -488,7 +488,7 @@ public class NewPort {
                     loaded = true;
                 }
             } catch (IOException e) {
-                VoxelPort.log.warning("[VoxelPort] Invalid File. \"" + portalName + "\" is not a VoxelPort or is currupted.");
+                VoxelPort.log.warning("[VoxelPort] Invalid File. \"" + portalName + "\" is not a VoxelPort or is corrupted.");
                 e.printStackTrace();
             }
         }
