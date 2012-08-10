@@ -6,6 +6,7 @@ package com.thevoxelbox.voxelport;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.TreeMap;
@@ -22,7 +23,8 @@ import org.bukkit.entity.Player;
 public class PortManager {
 
     private static TreeMap<Integer, PortContainer> ports = new TreeMap<Integer, PortContainer>();
-    private static HashMap<String, NewPort> reference = new HashMap<String, NewPort>();
+    public static HashMap<String, NewPort> reference = new HashMap<String, NewPort>();
+    public static HashMap<String, String> portTargets = new HashMap<String, String>();
     //
     private static PortTick portTick;
     //
@@ -42,6 +44,7 @@ public class PortManager {
         plugin = vp;
         loadConfig();
         loadPortals();
+        loadTargets();
         VoxelPort.log.info("[VoxelPort] Starting thread...");
         portTick = new PortTick(PORT_TICK_SPEED);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, portTick, PortTick.codeTick, PortTick.codeTick <= 1 ? 2 : PortTick.codeTick);
@@ -218,6 +221,33 @@ public class PortManager {
         }
     }
 
+    private static void loadTargets() {
+        try {
+            File f = new File("plugins/VoxelPort/VoxelPortTargets.txt");
+            if (f.exists()) {
+                Scanner snr = new Scanner(f);
+                while (snr.hasNext()) {
+                    String str = snr.nextLine();
+                    if (str.startsWith("#")) {
+                        continue;
+                    }
+                    if (str.contains(":")) {
+                        String s[] = str.split(":");
+                        if (reference.get(s[0]) != null && reference.get(s[1]) != null) portTargets.put(s[0], s[1]);
+                    }
+                }
+                snr.close();
+                VoxelPort.log.info("[VoxelPort] VoxelPortTargets.txt loaded");
+            } else {
+                VoxelPort.log.warning("[VoxelPort] VoxelPortTargets.txt not found!");
+                saveTargets();
+            }
+        } catch (Exception e) {
+            VoxelPort.log.warning("[VoxelPort] Error while loading VoxelPortTargets.txt");
+            e.printStackTrace();
+        }
+    }
+
     public static void saveConfig() {
         try {
             File f = new File("plugins/VoxelPort/VoxelPortConfig.txt");
@@ -246,6 +276,30 @@ public class PortManager {
 
         } catch (Exception e) {
             VoxelPort.log.warning("[VoxelPort] Error while saving VoxelPortConfig.txt");
+            e.printStackTrace();
+        }
+    }
+
+    protected static void saveTargets() {
+        try {
+            File f = new File("plugins/VoxelPort/VoxelPortTargets.txt");
+
+            f.getParentFile().mkdirs();
+            f.createNewFile();
+            PrintWriter pw = new PrintWriter(f);
+
+            pw.write("#VoxelPort target port list\r\n");
+
+            for (Map.Entry<String, String> m : portTargets.entrySet()) {
+                pw.write(m.getKey() + ":" + m.getValue() + "\r\n");
+            }
+
+            pw.close();
+            VoxelPort.log.info("[VoxelPort] Target list saved");
+            loadConfig();
+        }
+        catch (Exception e) {
+            VoxelPort.log.warning("[VoxelPort] Error while saving VoxelPortTargets.txt");
             e.printStackTrace();
         }
     }
@@ -375,12 +429,16 @@ public class PortManager {
                     return;
                 }
                 if (tp.getArrival() == null) {
-                    p.sendMessage(ChatColor.RED + "The target portal " + s[2] + " doesn't contain an arrival location");
-                    return;
+                    np.setDestination(null);
+                } else {
+                    np.setDestination(tp.getArrival());
+                    np.saveData();
                 }
-                np.setDestination(tp.getArrival());
-                np.saveData();
-                p.sendMessage(ChatColor.GREEN + "target location for Port \"" + np.getName() + "\" has been set to arrival location of Port \"" + tp.getName() + "\"");
+
+                portTargets.put(np.getName(), tp.getName());
+                saveTargets();
+                p.sendMessage(ChatColor.GREEN + "target location for Port \"" + np.getName() + "\" has been set to Port \"" + tp.getName() + "\"");
+
                 return;
             }
             if (s.length < 2) {
@@ -388,6 +446,8 @@ public class PortManager {
                 if (pd != null && pd.p != null) {
                     pd.p.setDestination(p.getLocation());
                     pd.p.saveData();
+                    portTargets.remove(pd.p.getName());
+                    saveTargets();
                     p.sendMessage(ChatColor.GREEN + "Target location for Port \"" + pd.p.getName() + "\" has been set to current location.");
                 } else {
                     p.sendMessage(ChatColor.RED + "You haven't set a port, please pick a portal name.");
@@ -400,6 +460,8 @@ public class PortManager {
             if (np != null) {
                 np.setDestination(p.getLocation());
                 np.saveData();
+                portTargets.remove(np.getName());
+                saveTargets();
                 p.sendMessage(ChatColor.GREEN + "Target location for Port \"" + np.getName() + "\" has been set to current location.");
                 return;
             } else {
@@ -425,12 +487,16 @@ public class PortManager {
                         case 'd':
                             np.setDestination(VoxelPort.s.getWorld(s[2]).getSpawnLocation());
                             np.saveData();
+                            portTargets.remove(np.getName());
+                            saveTargets();
                             p.sendMessage(ChatColor.GREEN + "Target location for Port \"" + np.getName() + "\" has been set to origin of world \"" + s[2] + "\"");
                             return;
 
                         case 'n':
                             np.setDestination(VoxelPort.s.getWorld(s[2]).getSpawnLocation());
                             np.saveData();
+                            portTargets.remove(np.getName());
+                            saveTargets();
                             p.sendMessage(ChatColor.GREEN + "Target location for Port \"" + np.getName() + "\" has been set to origin of nether world \"" + s[2] + "\"");
                             return;
 
@@ -441,6 +507,8 @@ public class PortManager {
                 } else {
                     np.setDestination(VoxelPort.s.getWorld(s[2]).getSpawnLocation());
                     np.saveData();
+                    portTargets.remove(np.getName());
+                    saveTargets();
                     p.sendMessage(ChatColor.GREEN + "Target location for Port \"" + np.getName() + "\" has been set to origin of world \"" + s[2] + "\"");
                     return;
                 }
@@ -450,24 +518,41 @@ public class PortManager {
          *
          */
         if (s[0].equalsIgnoreCase("arrive")) {
+            Location arrivalLocation = p.getLocation();
+            
+            NewPort np = null;
             if (s.length < 2) {
+                // The command omits a port name, so apply it to the port in the "working slot"
                 PortData pd = data.get(p.getName());
                 if (pd != null && pd.p != null) {
-                    pd.p.setArrival(p.getLocation());
-                    pd.p.saveData();
-                    p.sendMessage(ChatColor.GREEN + "Arrival location for Port \"" + pd.p.getName() + "\" has been set to current location.");
+                    np = pd.p;
                 } else {
                     p.sendMessage(ChatColor.RED + "You haven't set a port, please pick a portal name.");
+                    return;
                 }
-                return;
+            } else {
+                np = reference.get(s[1]);
             }
 
-            NewPort np = reference.get(s[1]);
-
             if (np != null) {
-                np.setArrival(p.getLocation());
+                if (s.length >= 3 && s[2].equalsIgnoreCase("clear")) {
+                    arrivalLocation = null;
+                    p.sendMessage(ChatColor.GREEN + "Arrival location for Port \"" + np.getName() + "\" has been cleared.");
+                } else {       
+                    p.sendMessage(ChatColor.GREEN + "Arrival location for Port \"" + np.getName() + "\" has been set to current location.");
+                }
+
+                np.setArrival(arrivalLocation);
                 np.saveData();
-                p.sendMessage(ChatColor.GREEN + "Arrival location for Port \"" + np.getName() + "\" has been set to current location.");
+
+                // Automatically keep port destinations synced with their targets' arrival locations
+                for (Map.Entry<String, String> m : portTargets.entrySet()) {
+                    if (m.getValue().equalsIgnoreCase(np.getName())) {
+                        NewPort linkedPort = reference.get(m.getKey());
+                        linkedPort.setDestination(arrivalLocation);
+                        linkedPort.saveData();
+                    }
+                }
             } else {
                 p.sendMessage(ChatColor.RED + "A port with this name doesn't exist.");
             }

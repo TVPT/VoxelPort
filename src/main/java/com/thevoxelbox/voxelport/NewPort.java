@@ -80,19 +80,19 @@ public class NewPort {
         readData();
     }
 
-    public NewPort(int highx, int lowx, int highy, int lowy, int highz, int lowz, String worldname, String Name) {
-        this(highx, lowx, highy, lowy, highz, lowz, worldname, Name, null, null);
+    public NewPort(int x1, int x2, int y1, int y2, int z1, int z2, String worldname, String Name) {
+        this(x1, x2, y1, y2, z1, z2, worldname, Name, null, null);
     }
 
-    public NewPort(int highx, int lowx, int highy, int lowy, int highz, int lowz, String worldname, String Name, Location arrival, Location depart) {
-        portalZone = new Zone(highx, lowx, highy, lowy, highz, lowz, worldname);
+    public NewPort(int x1, int x2, int y1, int y2, int z1, int z2, String worldname, String Name, Location arrival, Location depart) {
+        portalZone = new Zone(x1, x2, y1, y2, z1, z2, worldname);
         portalName = Name;
         arrivalLocation = arrival;
         departLocation = depart;
     }
 
-    public NewPort(int highx, int lowx, int highy, int lowy, int highz, int lowz, String worldname, World.Environment env, String Name) {
-        portalZone = new Zone(highx, lowx, highy, lowy, highz, lowz, worldname, env);
+    public NewPort(int x1, int x2, int y1, int y2, int z1, int z2, String worldname, World.Environment env, String Name) {
+        portalZone = new Zone(x1, x2, y1, y2, z1, z2, worldname, env);
         portalName = Name;
     }
 
@@ -313,12 +313,9 @@ public class NewPort {
     public boolean departPlayer(Player p, int time) {
         if (insideZone(p.getLocation())) {
             if (departures.contains(time)) {
-                if (departLocation == null) {
-                    p.sendMessage(ChatColor.RED + "This portal doesn't contain a target location!");
-                    PortTick.usedTickets.add(p);
-                    return true;
-                }
-                p.teleport(departLocation, TeleportCause.ENDER_PEARL);
+                // We could fire a teleport action here without scheduling an instance of MoveEventSucks,
+                // but doing so anyway will ensure the players chunks get refreshed properly. 
+                instaPort(p, true);
                 PortTick.usedTickets.add(p);
                 return true;
             } else {
@@ -340,18 +337,24 @@ public class NewPort {
     }
 
     public void instaPort(Player p, boolean override) {
-        if (departLocation == null) {
-            p.sendMessage(ChatColor.RED + "This portal doesn't contain a target location!");
-            return;
-        } else {
-            if (override) {
-                Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(VoxelPort.vp, new MoveEventSucks(p, departLocation));
+        Location targetLocation = this.departLocation;
+        if (targetLocation == null) {
+            String targetPortName = PortManager.portTargets.get(this.getName());
+            if (targetPortName != null) {
+                NewPort targetPort = PortManager.reference.get(targetPortName);
+                targetLocation = targetPort.getZone().worldLocationFromRelativeLocation(this.getZone().relativeLocationFromWorldLocation(p.getLocation()));
             } else {
-                if (redstoneKey != null && !redstoneKey.getBlock().isBlockPowered()) {
-                    return;
-                }
-                Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(VoxelPort.vp, new MoveEventSucks(p, departLocation));
+                p.sendMessage(ChatColor.RED + "This portal doesn't contain a target location!");
+                return;
             }
+        }
+        if (override) {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(VoxelPort.vp, new MoveEventSucks(p, departLocation));
+        } else {
+            if (redstoneKey != null && !redstoneKey.getBlock().isBlockPowered()) {
+                return;
+            }
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(VoxelPort.vp, new MoveEventSucks(p, departLocation));
         }
     }
 
