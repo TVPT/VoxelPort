@@ -23,8 +23,8 @@ import org.bukkit.entity.Player;
 public class PortManager {
 
     private static TreeMap<Integer, PortContainer> ports = new TreeMap<Integer, PortContainer>();
-    public static HashMap<String, NewPort> reference = new HashMap<String, NewPort>();
-    public static HashMap<String, String> portTargets = new HashMap<String, String>();
+    private static HashMap<String, NewPort> reference = new HashMap<String, NewPort>();
+    private static HashMap<String, String> portTargets = new HashMap<String, String>();
     //
     private static PortTick portTick;
     //
@@ -79,6 +79,14 @@ public class PortManager {
             e.printStackTrace();
             return null;
         }
+    }
+    
+    public static NewPort getPortByName(String name) {
+        return reference.get(name);
+    }
+    
+    public static String getTargetPortNameForPortWithName(String name) {
+        return portTargets.get(name);
     }
 
     private static void sortPorts() {

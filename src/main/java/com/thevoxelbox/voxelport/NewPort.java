@@ -339,9 +339,9 @@ public class NewPort {
     public void instaPort(Player p, boolean override) {
         Location targetLocation = departLocation;
         if (targetLocation == null) {
-            String targetPortName = PortManager.portTargets.get(this.getName());
+            String targetPortName = PortManager.getTargetPortNameForPortWithName(this.getName());
             if (targetPortName != null) {
-                NewPort targetPort = PortManager.reference.get(targetPortName);
+                NewPort targetPort = PortManager.getPortByName(targetPortName);
                 targetLocation = targetPort.getZone().worldLocationFromRelativeLocation(this.getZone().relativeLocationFromWorldLocation(p.getLocation()));
             } else {
                 p.sendMessage(ChatColor.RED + "This portal doesn't contain a target location!");
