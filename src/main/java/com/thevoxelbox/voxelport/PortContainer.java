@@ -1,10 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.thevoxelbox.voxelport;
 
-//import com.thevoxelbox.bukkit.port.NPC.PortNPC;
 import java.util.ArrayList;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -40,7 +35,7 @@ public class PortContainer {
         }
         for (NewPort n : collection) {
             if (n.insideZone(l)) {
-                if (p.getItemInHand().getTypeId() == 266 && VoxelPort.admns.contains(p.getName())) {
+                if (p.getItemInHand().getTypeId() == 266 && p.hasPermission("voxelport.admin")) {
                     n.instaPort(p, true);
                     return;
                 }

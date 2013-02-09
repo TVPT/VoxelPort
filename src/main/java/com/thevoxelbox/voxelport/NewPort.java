@@ -1,7 +1,5 @@
 package com.thevoxelbox.voxelport;
 
-//import com.thevoxelbox.bukkit.port.NPC.NpcSpawner;
-//import com.thevoxelbox.bukkit.port.NPC.PortNPC;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;

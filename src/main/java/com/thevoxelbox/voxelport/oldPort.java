@@ -21,8 +21,8 @@ public class oldPort {
     public int zyl;
     public Location t = null;
     public oldPort target = null;
-    public HashSet<Integer> disp = new HashSet();
-    public HashSet<String> welcome = new HashSet();
+    public HashSet<Integer> disp = new HashSet<Integer>();
+    public HashSet<String> welcome = new HashSet<String>();
     public int start = -1;
     public int interval = -1;
 

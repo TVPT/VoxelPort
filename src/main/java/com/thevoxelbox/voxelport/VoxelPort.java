@@ -1,8 +1,5 @@
 package com.thevoxelbox.voxelport;
 
-import java.io.File;
-import java.util.HashSet;
-import java.util.Scanner;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,7 +16,6 @@ public class VoxelPort extends JavaPlugin {
     private final PortListener listener = new PortListener();
     public static Server s;
     public static VoxelPort vp;
-    public static HashSet<String> admns = new HashSet();
     public static PortManager portMan;
 
     @Override
@@ -33,7 +29,6 @@ public class VoxelPort extends JavaPlugin {
         s = getServer();
         vp = this;
 
-        readAdmins();
         portMan = new PortManager(this);
 
         s.getPluginManager().registerEvents(listener, this);
@@ -58,7 +53,7 @@ public class VoxelPort extends JavaPlugin {
                 p.sendMessage(ChatColor.GOLD + "Voxel Time: " + ChatColor.GREEN + p.getWorld().getTime());
                 return true;
             }
-            if (commandName.equals("vp") && admns.contains(p.getName())) {
+            if (commandName.equals("vp") && p.hasPermission("voxelport.vp")) {
                 if (args.length >= 1) {
                     try {
                         portMan.manageCommand(p, args);
@@ -91,27 +86,5 @@ public class VoxelPort extends JavaPlugin {
             }
         }
         return false;
-    }
-
-    public void initStuff() {
-        readAdmins();
-
-    }
-
-    public void readAdmins() {
-        try {
-            File f = new File("plugins/admns.txt");
-            if (!f.exists()) {
-                log.warning("[VoxelPort] Whoops! admns.txt is missing or in a wrong place.");
-            }
-            Scanner snr = new Scanner(f);
-            while (snr.hasNext()) {
-                String st = snr.nextLine();
-                VoxelPort.admns.add(st);
-            }
-            snr.close();
-        } catch (Exception e) {
-            log.warning("[VoxelPort] Error while loading admns.txt");
-        }
     }
 }
