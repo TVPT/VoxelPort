@@ -45,14 +45,12 @@ public class PortContainer {
                     if (i.getTypeId() == PortManager.TICKETID) {
                         if (n.instant()) {
                             n.instaPort(p, false);
-                            int newAmount = p.getInventory().getItemInHand().getAmount() - 1;
-                            p.getInventory().getItemInHand().setAmount(newAmount);
+                            removeTicketFromPlayer(p);
                             return;
                         }
                         if (n.isPortActivated()) {
                             n.welcomePlayer(p);
-                            int newAmount = p.getInventory().getItemInHand().getAmount() - 1;
-                            p.getInventory().getItemInHand().setAmount(newAmount);
+                            removeTicketFromPlayer(p);
                             PortTick.registerTicket(p, n);
                             return;
                         }
@@ -91,5 +89,16 @@ public class PortContainer {
             }
         }
         return null;
+    }
+    
+    private void removeTicketFromPlayer(Player player){
+        final ItemStack itemInHand = player.getItemInHand();
+        final int newAmount = itemInHand.getAmount() - 1;
+        if(newAmount == 0){
+            player.getInventory().remove(itemInHand);
+        }
+        else{
+            itemInHand.setAmount(newAmount);
+        }
     }
 }
