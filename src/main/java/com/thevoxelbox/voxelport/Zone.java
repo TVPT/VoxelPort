@@ -3,64 +3,68 @@ package com.thevoxelbox.voxelport;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 
-
-public class Zone {
+public class Zone
+{
 
     public int zonehighx, zonehighy, zonehighz, zonelowx, zonelowy, zonelowz;
     public String world;
     public World.Environment worldEnvironment;
 
-    public Zone(DataInputStream data) throws IOException {
-        zonehighx = data.readInt();
-        zonehighy = data.readInt();
-        zonehighz = data.readInt();
-        zonelowx = data.readInt();
-        zonelowy = data.readInt();
-        zonelowz = data.readInt();
-        world = data.readUTF();
-        worldEnvironment = World.Environment.valueOf(data.readUTF());
+    public Zone(final DataInputStream data) throws IOException
+    {
+        this.zonehighx = data.readInt();
+        this.zonehighy = data.readInt();
+        this.zonehighz = data.readInt();
+        this.zonelowx = data.readInt();
+        this.zonelowy = data.readInt();
+        this.zonelowz = data.readInt();
+        this.world = data.readUTF();
+        this.worldEnvironment = World.Environment.valueOf(data.readUTF());
     }
 
-    public Zone(int highx, int lowx, int highy, int lowy, int highz, int lowz, String worldname) {
-        zonehighx = highx;
-        zonehighy = highy;
-        zonehighz = highz;
-        zonelowx = lowx;
-        zonelowy = lowy;
-        zonelowz = lowz;
-        world = worldname;
-        worldEnvironment = World.Environment.NORMAL;
+    public Zone(final int highx, final int lowx, final int highy, final int lowy, final int highz, final int lowz, final String worldname)
+    {
+        this.zonehighx = highx;
+        this.zonehighy = highy;
+        this.zonehighz = highz;
+        this.zonelowx = lowx;
+        this.zonelowy = lowy;
+        this.zonelowz = lowz;
+        this.world = worldname;
+        this.worldEnvironment = World.Environment.NORMAL;
     }
 
-    public Zone(int highx, int lowx, int highy, int lowy, int highz, int lowz, String worldname, World.Environment environment) {
-        zonehighx = highx;
-        zonehighy = highy;
-        zonehighz = highz;
-        zonelowx = lowx;
-        zonelowy = lowy;
-        zonelowz = lowz;
-        world = worldname;
-        worldEnvironment = environment;
+    public Zone(final int highx, final int lowx, final int highy, final int lowy, final int highz, final int lowz, final String worldname, final World.Environment environment)
+    {
+        this.zonehighx = highx;
+        this.zonehighy = highy;
+        this.zonehighz = highz;
+        this.zonelowx = lowx;
+        this.zonelowy = lowy;
+        this.zonelowz = lowz;
+        this.world = worldname;
+        this.worldEnvironment = environment;
     }
 
-    public boolean inZone(Location loc) {
-        return (loc.getBlockX() <= zonehighx) && (loc.getBlockX() >= zonelowx)
-                && (loc.getBlockZ() <= zonehighz) && (loc.getBlockZ() >= zonelowz)
-                && (loc.getBlockY() <= zonehighy) && (loc.getBlockY() >= zonelowy)
-                && (world.equals(loc.getWorld().getName()));
+    public boolean inZone(final Location loc)
+    {
+        return (loc.getBlockX() <= this.zonehighx) && (loc.getBlockX() >= this.zonelowx) && (loc.getBlockZ() <= this.zonehighz) && (loc.getBlockZ() >= this.zonelowz) && (loc.getBlockY() <= this.zonehighy) && (loc.getBlockY() >= this.zonelowy)
+                && (this.world.equals(loc.getWorld().getName()));
     }
 
-    public void save(DataOutputStream data) throws IOException {
-        data.writeInt(zonehighx);
-        data.writeInt(zonehighy);
-        data.writeInt(zonehighz);
-        data.writeInt(zonelowx);
-        data.writeInt(zonelowy);
-        data.writeInt(zonelowz);
-        data.writeUTF(world);
-        data.writeUTF(worldEnvironment.name());
+    public void save(final DataOutputStream data) throws IOException
+    {
+        data.writeInt(this.zonehighx);
+        data.writeInt(this.zonehighy);
+        data.writeInt(this.zonehighz);
+        data.writeInt(this.zonelowx);
+        data.writeInt(this.zonelowy);
+        data.writeInt(this.zonelowz);
+        data.writeUTF(this.world);
+        data.writeUTF(this.worldEnvironment.name());
     }
 }

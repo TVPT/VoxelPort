@@ -6,10 +6,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashSet;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-public class oldPort {
+public class oldPort
+{
 
     public String name;
     public Location r = null;
@@ -26,7 +28,8 @@ public class oldPort {
     public int start = -1;
     public int interval = -1;
 
-    public oldPort(int xh, int xl, int zh, int zl, int yh, int yl, String n) {
+    public oldPort(final int xh, final int xl, final int zh, final int zl, final int yh, final int yl, final String n)
+    {
         this.zxh = xh;
         this.zxl = xl;
         this.zzh = zh;
@@ -36,25 +39,33 @@ public class oldPort {
         this.name = n;
     }
 
-    public oldPort(String na) {
+    public oldPort(final String na)
+    {
         this.name = na;
-        readData();
+        this.readData();
     }
 
-    public oldPort(String vpo, boolean a) {
+    public oldPort(final String vpo, final boolean a)
+    {
         this.name = vpo;
-        readTargetData();
+        this.readTargetData();
     }
 
-    private void readData() {
-        if (new File("VoxelPorts/" + this.name).exists()) {
-            try {
-                FileInputStream file = new FileInputStream(new File("VoxelPorts/" + this.name));
-                DataInputStream data = new DataInputStream(file);
-                try {
-                    while (true) {
-                        byte by = data.readByte();
-                        if (by == 1) {
+    private void readData()
+    {
+        if (new File("VoxelPorts/" + this.name).exists())
+        {
+            try
+            {
+                final FileInputStream file = new FileInputStream(new File("VoxelPorts/" + this.name));
+                final DataInputStream data = new DataInputStream(file);
+                try
+                {
+                    while (true)
+                    {
+                        final byte by = data.readByte();
+                        if (by == 1)
+                        {
                             this.zxh = data.readInt();
                             this.zxl = data.readInt();
                             this.zyh = data.readInt();
@@ -62,68 +73,90 @@ public class oldPort {
                             this.zzh = data.readInt();
                             this.zzl = data.readInt();
                         }
-                        if (by == 2) {
-                            double rx = data.readDouble();
-                            double ry = data.readDouble();
-                            double rz = data.readDouble();
-                            String wo = data.readUTF();
+                        if (by == 2)
+                        {
+                            final double rx = data.readDouble();
+                            final double ry = data.readDouble();
+                            final double rz = data.readDouble();
+                            final String wo = data.readUTF();
                             this.r = new Location(Bukkit.getWorld(wo), rx, ry, rz);
                         }
-                        if (by == 3) {
-                            double tx = data.readDouble();
-                            double ty = data.readDouble();
-                            double tz = data.readDouble();
-                            String wo = data.readUTF();
+                        if (by == 3)
+                        {
+                            final double tx = data.readDouble();
+                            final double ty = data.readDouble();
+                            final double tz = data.readDouble();
+                            final String wo = data.readUTF();
                             this.t = new Location(Bukkit.getWorld(wo), tx, ty, tz);
                         }
-                        if (by == 4) {
+                        if (by == 4)
+                        {
                             this.disp.add(Integer.valueOf(data.readInt()));
                         }
-                        if (by == 5) {
-                            String ss = data.readUTF();
+                        if (by == 5)
+                        {
+                            final String ss = data.readUTF();
                             this.target = new oldPort(ss, true);
                         }
-                        if (by == 6) {
-                            int f = data.readInt();
-                            for (int u = 0; u < f; u++) {
+                        if (by == 6)
+                        {
+                            final int f = data.readInt();
+                            for (int u = 0; u < f; u++)
+                            {
                                 this.welcome.add(data.readUTF());
                             }
                         }
-                        if (by == 7) {
+                        if (by == 7)
+                        {
                             this.start = data.readInt();
                             this.interval = data.readInt();
                         }
                     }
-                } catch (EOFException eof) {
+                }
+                catch (final EOFException eof)
+                {
                     data.close();
                     VoxelPort.log.info("[VoxelPort] Portal \"" + this.name + "\" loaded!");
                 }
-            } catch (IOException e) {
+            }
+            catch (final IOException e)
+            {
                 VoxelPort.log.warning("[VoxelPort] Invalid File. \"" + this.name + "\" is not a VoxelPort or is currupted.");
             }
         }
     }
 
-    private void readTargetData() {
-        if (new File("VoxelPorts/" + this.name).exists()) {
-            try {
-                FileInputStream file = new FileInputStream(new File("VoxelPorts/" + this.name));
-                DataInputStream data = new DataInputStream(file);
-                try {
-                    while (true) {
-                        byte by = data.readByte();
-                        if (by == 6) {
-                            int f = data.readInt();
-                            for (int u = 0; u < f; u++) {
+    private void readTargetData()
+    {
+        if (new File("VoxelPorts/" + this.name).exists())
+        {
+            try
+            {
+                final FileInputStream file = new FileInputStream(new File("VoxelPorts/" + this.name));
+                final DataInputStream data = new DataInputStream(file);
+                try
+                {
+                    while (true)
+                    {
+                        final byte by = data.readByte();
+                        if (by == 6)
+                        {
+                            final int f = data.readInt();
+                            for (int u = 0; u < f; u++)
+                            {
                                 this.welcome.add(data.readUTF());
                             }
                         }
                     }
-                } catch (EOFException eof) {
+                }
+                catch (final EOFException eof)
+                {
                     data.close();
                     VoxelPort.log.info("[VoxelPort] Portal target \"" + this.name + "\" loaded!");
                 }
-            } catch (IOException e) {
+            }
+            catch (final IOException e)
+            {
                 System.out.println("Deerp. IOException @");
             }
         }
