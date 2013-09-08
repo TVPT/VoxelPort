@@ -8,89 +8,99 @@ import org.bukkit.entity.Player;
 /**
  * @author Voxel
  */
-public class HitBlox {
+public class HitBlox
+{
 
-    private Location player_loc;
-    private double rot_x, rot_y, view_height, rot_xsin, rot_xcos, rot_ysin, rot_ycos;
-    private double length, h_length, step;
+    private Location playerLoc;
+    private double rotX, rotY, viewHeight, rot_xsin, rotXcos, rotYsin, rotYcos;
+    private double length, hLength, step;
     private double range;
-    private double player_x, player_y, player_z;
-    private double x_offset, y_offset, z_offset;
-    private int last_x, last_y, last_z;
-    private int target_x, target_y, target_z, target_type;
-    private World w;
+    private double playerX, playerY, playerZ;
+    private double xOffset, yOffset, zOffset;
+    private int lastX, lastY, lastZ;
+    private int targetX, targetY, targetZ;
+    private final World world;
 
     /**
      * Constructor requiring player, uses default values
      * 
-     * @param in_player
+     * @param player
      */
-    public HitBlox(Player in_player, World world) {
-        w = world;
-        init(in_player.getLocation(), 250, 0.2, 1.65); // Reasonable default
+    public HitBlox(final Player player, final World world)
+    {
+        this.world = world;
+        this.init(player.getLocation(), 250, 0.2, 1.65); // Reasonable
+                                                            // default
         // values
     }
 
-    public HitBlox(Player p, World world, double maxRange) {
-        w = world;
-        init(p.getLocation(), maxRange, 0.2, 1.65);
-        fromOffworld();
+    public HitBlox(final Player player, final World world, final double maxRange)
+    {
+        this.world = world;
+        this.init(player.getLocation(), maxRange, 0.2, 1.65);
+        this.fromOffworld();
     }
 
     /**
      * Constructor requiring location, uses default values
      * 
-     * @param in_location
+     * @param loc
      */
-    public HitBlox(Location in_location) {
-        init(in_location, 200, 0.2, 0);
+    public HitBlox(final Location loc)
+    {
+        this.world = loc.getWorld();
+        this.init(loc, 200, 0.2, 0);
     }
 
     /**
      * Constructor requiring player, max range, and a stepping value
      * 
-     * @param in_player
-     * @param in_range
-     * @param in_step
+     * @param player
+     * @param range
+     * @param step
      */
-    public HitBlox(Player in_player, int in_range, double in_step) {
-        init(in_player.getLocation(), in_range, in_step, 1.65);
+    public HitBlox(final Player player, final int range, final double step)
+    {
+        this.world = player.getWorld();
+        this.init(player.getLocation(), range, step, 1.65);
     }
 
     /**
      * Constructor requiring location, max range, and a stepping value
      * 
-     * @param in_location
-     * @param in_range
-     * @param in_step
+     * @param loc
+     * @param range
+     * @param step
      */
-    public HitBlox(Location in_location, int in_range, double in_step) {
-        w = in_location.getWorld();
-        init(in_location, in_range, in_step, 0);
+    public HitBlox(final Location loc, final int range, final double step)
+    {
+        this.world = loc.getWorld();
+        this.init(loc, range, step, 0);
     }
 
-    private void init(Location in_location, double in_range, double in_step, double in_view_height) {
-        player_loc = in_location;
-        view_height = in_view_height;
-        player_x = player_loc.getX();
-        player_y = player_loc.getY() + view_height;
-        player_z = player_loc.getZ();
-        range = in_range;
-        step = in_step;
-        length = 0;
-        rot_x = (player_loc.getYaw() + 90) % 360;
-        rot_y = player_loc.getPitch() * -1;
-        rot_ycos = Math.cos(Math.toRadians(rot_y));
-        rot_ysin = Math.sin(Math.toRadians(rot_y));
-        rot_xcos = Math.cos(Math.toRadians(rot_x));
-        rot_xsin = Math.sin(Math.toRadians(rot_x));
+    private void init(final Location loc, final double range, final double step, final double viewHeight)
+    {
+        this.playerLoc = loc;
+        this.viewHeight = viewHeight;
+        this.playerX = this.playerLoc.getX();
+        this.playerY = this.playerLoc.getY() + this.viewHeight;
+        this.playerZ = this.playerLoc.getZ();
+        this.range = range;
+        this.step = step;
+        this.length = 0;
+        this.rotX = (this.playerLoc.getYaw() + 90) % 360;
+        this.rotY = this.playerLoc.getPitch() * -1;
+        this.rotYcos = Math.cos(Math.toRadians(this.rotY));
+        this.rotYsin = Math.sin(Math.toRadians(this.rotY));
+        this.rotXcos = Math.cos(Math.toRadians(this.rotX));
+        this.rot_xsin = Math.sin(Math.toRadians(this.rotX));
 
-        target_x = (int) Math.floor(player_loc.getX());
-        target_y = (int) Math.floor(player_loc.getY() + view_height);
-        target_z = (int) Math.floor(player_loc.getZ());
-        last_x = target_x;
-        last_y = target_y;
-        last_z = target_z;
+        this.targetX = (int) Math.floor(this.playerLoc.getX());
+        this.targetY = (int) Math.floor(this.playerLoc.getY() + this.viewHeight);
+        this.targetZ = (int) Math.floor(this.playerLoc.getZ());
+        this.lastX = this.targetX;
+        this.lastY = this.targetY;
+        this.lastZ = this.targetZ;
     }
 
     /**
@@ -98,10 +108,11 @@ public class HitBlox {
      * 
      * @return Block
      */
-    public Block getTargetBlock() {
-        fromOffworld();
-        while ((getNextBlock() != null) && (getCurBlock().getTypeId() == 0));
-        return getCurBlock();
+    public Block getTargetBlock()
+    {
+        this.fromOffworld();
+        while ((this.getNextBlock() != null) && (this.getCurBlock().isEmpty()));
+        return this.getCurBlock();
     }
 
     /**
@@ -109,10 +120,12 @@ public class HitBlox {
      * 
      * @param type
      */
-    public void setTargetBlock(int type) {
-        while ((getNextBlock() != null) && (getCurBlock().getTypeId() == 0));
-        if (getCurBlock() != null) {
-            w.getBlockAt(target_x, target_y, target_z).setTypeId(type);
+    public void setTargetBlock(final int type)
+    {
+        while ((this.getNextBlock() != null) && (this.getCurBlock().isEmpty()));
+        if (this.getCurBlock() != null)
+        {
+            this.world.getBlockAt(this.targetX, this.targetY, this.targetZ).setTypeId(type);
         }
     }
 
@@ -122,11 +135,14 @@ public class HitBlox {
      * 
      * @return Block
      */
-    public Block getFaceBlock() {
-        while ((getNextBlock() != null) && (getCurBlock().getTypeId() == 0));
-        if (getCurBlock() != null) {
-            return getLastBlock();
-        } else {
+    public Block getFaceBlock()
+    {
+        while ((this.getNextBlock() != null) && (this.getCurBlock().isEmpty()));
+        if (this.getCurBlock() != null)
+        {
+            return this.getLastBlock();
+        } else
+        {
             return null;
         }
     }
@@ -136,10 +152,12 @@ public class HitBlox {
      * 
      * @param type
      */
-    public void setFaceBlock(int type) {
-        while ((getNextBlock() != null) && (getCurBlock().getTypeId() == 0));
-        if (getCurBlock() != null) {
-            w.getBlockAt(target_x, target_y, target_z).setTypeId(type);
+    public void setFaceBlock(final int type)
+    {
+        while ((this.getNextBlock() != null) && (this.getCurBlock().isEmpty()));
+        if (this.getCurBlock() != null)
+        {
+            this.world.getBlockAt(this.targetX, this.targetY, this.targetZ).setTypeId(type);
         }
     }
 
@@ -148,113 +166,132 @@ public class HitBlox {
      * 
      * @return Block
      */
-    public Block getNextBlock() {
-        last_x = target_x;
-        last_y = target_y;
-        last_z = target_z;
+    public Block getNextBlock()
+    {
+        this.lastX = this.targetX;
+        this.lastY = this.targetY;
+        this.lastZ = this.targetZ;
 
-        do {
-            length += step;
+        do
+        {
+            this.length += this.step;
 
-            h_length = (length * rot_ycos);
-            y_offset = (length * rot_ysin);
-            x_offset = (h_length * rot_xcos);
-            z_offset = (h_length * rot_xsin);
+            this.hLength = (this.length * this.rotYcos);
+            this.yOffset = (this.length * this.rotYsin);
+            this.xOffset = (this.hLength * this.rotXcos);
+            this.zOffset = (this.hLength * this.rot_xsin);
 
-            target_x = (int) Math.floor(x_offset + player_x);
-            target_y = (int) Math.floor(y_offset + player_y);
-            target_z = (int) Math.floor(z_offset + player_z);
+            this.targetX = (int) Math.floor(this.xOffset + this.playerX);
+            this.targetY = (int) Math.floor(this.yOffset + this.playerY);
+            this.targetZ = (int) Math.floor(this.zOffset + this.playerZ);
 
-        } while ((length <= range) && ((target_x == last_x) && (target_y == last_y) && (target_z == last_z)));
+        } while ((this.length <= this.range) && ((this.targetX == this.lastX) && (this.targetY == this.lastY) && (this.targetZ == this.lastZ)));
 
-        if (length > range || target_y > 255 || target_y < 0) {
+        if ((this.length > this.range) || (this.targetY > 255) || (this.targetY < 0))
+        {
             return null;
         }
 
-        return w.getBlockAt(target_x, target_y, target_z);
+        return this.world.getBlockAt(this.targetX, this.targetY, this.targetZ);
     }
 
-    public Block getRangeBlock() {
-        fromOffworld();
-        if (length > range) {
+    public Block getRangeBlock()
+    {
+        this.fromOffworld();
+        if (this.length > this.range)
+        {
             return null;
-        } else {
-            return getRange();
+        } else
+        {
+            return this.getRange();
         }
     }
 
-    private Block getRange() {
-        last_x = target_x;
-        last_y = target_y;
-        last_z = target_z;
+    private Block getRange()
+    {
+        this.lastX = this.targetX;
+        this.lastY = this.targetY;
+        this.lastZ = this.targetZ;
 
-        do {
-            length += step;
+        do
+        {
+            this.length += this.step;
 
-            h_length = (length * rot_ycos);
-            y_offset = (length * rot_ysin);
-            x_offset = (h_length * rot_xcos);
-            z_offset = (h_length * rot_xsin);
+            this.hLength = (this.length * this.rotYcos);
+            this.yOffset = (this.length * this.rotYsin);
+            this.xOffset = (this.hLength * this.rotXcos);
+            this.zOffset = (this.hLength * this.rot_xsin);
 
-            target_x = (int) Math.floor(x_offset + player_x);
-            target_y = (int) Math.floor(y_offset + player_y);
-            target_z = (int) Math.floor(z_offset + player_z);
+            this.targetX = (int) Math.floor(this.xOffset + this.playerX);
+            this.targetY = (int) Math.floor(this.yOffset + this.playerY);
+            this.targetZ = (int) Math.floor(this.zOffset + this.playerZ);
 
-        } while ((length <= range) && ((target_x == last_x) && (target_y == last_y) && (target_z == last_z)));
+        } while ((this.length <= this.range) && ((this.targetX == this.lastX) && (this.targetY == this.lastY) && (this.targetZ == this.lastZ)));
 
-        if (w.getBlockTypeIdAt(target_x, target_y, target_z) != 0) {
-            return w.getBlockAt(target_x, target_y, target_z);
+        if (this.world.getBlockTypeIdAt(this.targetX, this.targetY, this.targetZ) != 0)
+        {
+            return this.world.getBlockAt(this.targetX, this.targetY, this.targetZ);
         }
 
-        if (length > range || target_y > 255 || target_y < 0) {
-            return w.getBlockAt(last_x, last_y, last_z);
-        } else {
-            return getRange();
+        if ((this.length > this.range) || (this.targetY > 255) || (this.targetY < 0))
+        {
+            return this.world.getBlockAt(this.lastX, this.lastY, this.lastZ);
+        } else
+        {
+            return this.getRange();
         }
     }
 
-    public void fromOffworld() {
-        if (target_y > 255) {
-            while (target_y > 255 && length <= range) {
-                last_x = target_x;
-                last_y = target_y;
-                last_z = target_z;
+    public void fromOffworld()
+    {
+        if (this.targetY > 255)
+        {
+            while ((this.targetY > 255) && (this.length <= this.range))
+            {
+                this.lastX = this.targetX;
+                this.lastY = this.targetY;
+                this.lastZ = this.targetZ;
 
-                do {
-                    length += step;
+                do
+                {
+                    this.length += this.step;
 
-                    h_length = (length * rot_ycos);
-                    y_offset = (length * rot_ysin);
-                    x_offset = (h_length * rot_xcos);
-                    z_offset = (h_length * rot_xsin);
+                    this.hLength = (this.length * this.rotYcos);
+                    this.yOffset = (this.length * this.rotYsin);
+                    this.xOffset = (this.hLength * this.rotXcos);
+                    this.zOffset = (this.hLength * this.rot_xsin);
 
-                    target_x = (int) Math.floor(x_offset + player_x);
-                    target_y = (int) Math.floor(y_offset + player_y);
-                    target_z = (int) Math.floor(z_offset + player_z);
+                    this.targetX = (int) Math.floor(this.xOffset + this.playerX);
+                    this.targetY = (int) Math.floor(this.yOffset + this.playerY);
+                    this.targetZ = (int) Math.floor(this.zOffset + this.playerZ);
 
-                } while ((length <= range) && ((target_x == last_x) && (target_y == last_y) && (target_z == last_z)));
+                } while ((this.length <= this.range) && ((this.targetX == this.lastX) && (this.targetY == this.lastY) && (this.targetZ == this.lastZ)));
             }
-        } else if (target_y < 0) {
-            while (target_y < 0 && length <= range) {
-                last_x = target_x;
-                last_y = target_y;
-                last_z = target_z;
+        } else if (this.targetY < 0)
+        {
+            while ((this.targetY < 0) && (this.length <= this.range))
+            {
+                this.lastX = this.targetX;
+                this.lastY = this.targetY;
+                this.lastZ = this.targetZ;
 
-                do {
-                    length += step;
+                do
+                {
+                    this.length += this.step;
 
-                    h_length = (length * rot_ycos);
-                    y_offset = (length * rot_ysin);
-                    x_offset = (h_length * rot_xcos);
-                    z_offset = (h_length * rot_xsin);
+                    this.hLength = (this.length * this.rotYcos);
+                    this.yOffset = (this.length * this.rotYsin);
+                    this.xOffset = (this.hLength * this.rotXcos);
+                    this.zOffset = (this.hLength * this.rot_xsin);
 
-                    target_x = (int) Math.floor(x_offset + player_x);
-                    target_y = (int) Math.floor(y_offset + player_y);
-                    target_z = (int) Math.floor(z_offset + player_z);
+                    this.targetX = (int) Math.floor(this.xOffset + this.playerX);
+                    this.targetY = (int) Math.floor(this.yOffset + this.playerY);
+                    this.targetZ = (int) Math.floor(this.zOffset + this.playerZ);
 
-                } while ((length <= range) && ((target_x == last_x) && (target_y == last_y) && (target_z == last_z)));
+                } while ((this.length <= this.range) && ((this.targetX == this.lastX) && (this.targetY == this.lastY) && (this.targetZ == this.lastZ)));
             }
-        } else {
+        } else
+        {
             return;
         }
     }
@@ -264,11 +301,14 @@ public class HitBlox {
      * 
      * @return Block
      */
-    public Block getCurBlock() {
-        if (length > range || target_y > 255 || target_y < 0) {
+    public Block getCurBlock()
+    {
+        if ((this.length > this.range) || (this.targetY > 255) || (this.targetY < 0))
+        {
             return null;
-        } else {
-            return w.getBlockAt(target_x, target_y, target_z);
+        } else
+        {
+            return this.world.getBlockAt(this.targetX, this.targetY, this.targetZ);
         }
     }
 
@@ -277,9 +317,11 @@ public class HitBlox {
      * 
      * @param type
      */
-    public void setCurBlock(int type) {
-        if (getCurBlock() != null) {
-            w.getBlockAt(target_x, target_y, target_z).setTypeId(type);
+    public void setCurBlock(final int type)
+    {
+        if (this.getCurBlock() != null)
+        {
+            this.world.getBlockAt(this.targetX, this.targetY, this.targetZ).setTypeId(type);
         }
     }
 
@@ -288,11 +330,13 @@ public class HitBlox {
      * 
      * @return Block
      */
-    public Block getLastBlock() {
-        if (last_y > 255 || last_y < 0) {
+    public Block getLastBlock()
+    {
+        if ((this.lastY > 255) || (this.lastY < 0))
+        {
             return null;
         }
-        return w.getBlockAt(last_x, last_y, last_z);
+        return this.world.getBlockAt(this.lastX, this.lastY, this.lastZ);
     }
 
     /**
@@ -300,9 +344,11 @@ public class HitBlox {
      * 
      * @param type
      */
-    public void setLastBlock(int type) {
-        if (getLastBlock() != null) {
-            w.getBlockAt(last_x, last_y, last_z).setTypeId(type);
+    public void setLastBlock(final int type)
+    {
+        if (this.getLastBlock() != null)
+        {
+            this.world.getBlockAt(this.lastX, this.lastY, this.lastZ).setTypeId(type);
         }
     }
 }

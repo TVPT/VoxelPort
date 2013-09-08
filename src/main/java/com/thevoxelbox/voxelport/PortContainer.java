@@ -1,69 +1,86 @@
 package com.thevoxelbox.voxelport;
 
 import java.util.ArrayList;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
- *
  * @author Voxel
  */
-public class PortContainer {
+public class PortContainer
+{
 
-    private ArrayList<NewPort> collection = new ArrayList<NewPort>();
+    private final ArrayList<Port> collection = new ArrayList<Port>();
 
-    public PortContainer(NewPort n) {
-        collection.add(n);
+    public PortContainer(final Port newPort)
+    {
+        this.collection.add(newPort);
     }
 
-    public void put(NewPort n) {
-        collection.add(n);
+    public void put(final Port newPort)
+    {
+        this.collection.add(newPort);
     }
 
-    public boolean remove(NewPort n) {
-        collection.remove(n);
-        return collection.isEmpty();
+    public boolean remove(final Port oldPort)
+    {
+        this.collection.remove(oldPort);
+        return this.collection.isEmpty();
     }
 
-    public void check(Player p, Location l) {
-        if (PortTick.tickets.containsKey(p)) {
+    public void check(final Player player, final Location loc)
+    {
+        if (PortTick.tickets.containsKey(player))
+        {
             return;
         }
-        if (p.getItemInHand().getTypeId() == 337) {
+        if (player.getItemInHand().getTypeId() == 337)
+        {
             return;
         }
-        for (NewPort n : collection) {
-            if (n.insideZone(l)) {
-                if (p.getItemInHand().getTypeId() == 266 && p.hasPermission("voxelport.admin")) {
-                    n.instaPort(p, true);
+        for (final Port port : this.collection)
+        {
+            if (port.insideZone(loc))
+            {
+                if ((player.getItemInHand().getTypeId() == 266) && player.hasPermission("voxelport.admin"))
+                {
+                    port.instaPort(player, true);
                     return;
                 }
-                if (n.ticket()) {
-                    ItemStack i = p.getItemInHand();
-                    //n.turnNpcToPlayer(l);
-                    if (i.getTypeId() == PortManager.TICKETID) {
-                        if (n.instant()) {
-                            n.instaPort(p, false);
-                            removeTicketFromPlayer(p);
+                if (port.ticket())
+                {
+                    final ItemStack i = player.getItemInHand();
+                    // n.turnNpcToPlayer(l);
+                    if (i.getTypeId() == PortManager.TICKETID)
+                    {
+                        if (port.instant())
+                        {
+                            port.instaPort(player, false);
+                            this.removeTicketFromPlayer(player);
                             return;
                         }
-                        if (n.isPortActivated()) {
-                            n.welcomePlayer(p);
-                            removeTicketFromPlayer(p);
-                            PortTick.registerTicket(p, n);
+                        if (port.isPortActivated())
+                        {
+                            port.welcomePlayer(player);
+                            this.removeTicketFromPlayer(player);
+                            PortTick.registerTicket(player, port);
                             return;
                         }
                     }
-                } else {
-                    if (n.instant()) {
-                        n.instaPort(p, false);
+                } else
+                {
+                    if (port.instant())
+                    {
+                        port.instaPort(player, false);
                         return;
                     }
-                    if (n.isPortActivated()) {
-                        n.welcomePlayer(p);
+                    if (port.isPortActivated())
+                    {
+                        port.welcomePlayer(player);
 
-                        PortTick.registerTicket(p, n);
+                        PortTick.registerTicket(player, port);
                         return;
                     }
                 }
@@ -71,33 +88,32 @@ public class PortContainer {
         }
     }
 
-    /* public PortNPC matchNpcId(int id) {
-     * for (newPort n : collection) {
-     * PortNPC pn = n.matchNpcId(id);
-     * if (pn != null) {
-     * return pn;
-     * }
-     * }
-     * return null;
-     * }
-     *
+    /*
+     * public PortNPC matchNpcId(int id) { for (newPort n : collection) {
+     * PortNPC pn = n.matchNpcId(id); if (pn != null) { return pn; } } return
+     * null; }
      */
-    public NewPort getPort(Location l) {
-        for (NewPort n : collection) {
-            if (n.insideZone(l)) {
+    public Port getPortAtLoc(final Location loc)
+    {
+        for (final Port n : this.collection)
+        {
+            if (n.insideZone(loc))
+            {
                 return n;
             }
         }
         return null;
     }
-    
-    private void removeTicketFromPlayer(Player player){
+
+    private void removeTicketFromPlayer(final Player player)
+    {
         final ItemStack itemInHand = player.getItemInHand();
         final int newAmount = itemInHand.getAmount() - 1;
-        if(newAmount == 0){
+        if (newAmount == 0)
+        {
             player.getInventory().remove(itemInHand);
-        }
-        else{
+        } else
+        {
             itemInHand.setAmount(newAmount);
         }
     }

@@ -4,90 +4,106 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Logger;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class PortTick
-        implements Runnable {
-
-    static final Logger log = Logger.getLogger("Minecraft");
-    public static int t;
+public class PortTick implements Runnable
+{
+    public static int time;
     private static int sleepSpeed;
-    public static HashMap<Player, NewPort> tickets = new HashMap();
-    public static HashSet<Player> usedTickets = new HashSet();
+    public static final HashMap<Player, Port> tickets = new HashMap<Player, Port>();
+    public static final HashSet<Player> usedTickets = new HashSet<Player>();
     public static int codeTick = 100;
 
-    public static void registerTicket(Player player, NewPort port) {
-        tickets.put(player, port);
+    public static void registerTicket(final Player player, final Port port)
+    {
+        PortTick.tickets.put(player, port);
         player.sendRawMessage(ChatColor.AQUA + "Your pass has been accepted.");
-        player.sendRawMessage(ChatColor.AQUA + "This VoxelPort will dispatch in " + ChatColor.LIGHT_PURPLE + ":     " + ChatColor.DARK_RED
-                + "[" + port.nextDepartureTotal((int) (PortTick.t + (player.getWorld().getTime() % 100))) + ChatColor.DARK_RED + "]");
+        player.sendRawMessage(ChatColor.AQUA + "This VoxelPort will dispatch in " + ChatColor.LIGHT_PURPLE + ":     " + ChatColor.DARK_RED + "[" + port.nextDepartureTotal((int) (PortTick.time + (player.getWorld().getTime() % 100))) + ChatColor.DARK_RED + "]");
     }
 
-    public static void setTime(int a) {
-        sleepSpeed = a;
+    public static void setTime(final int a)
+    {
+        PortTick.sleepSpeed = a;
     }
 
-    public PortTick() {
+    public PortTick()
+    {
         this(5000);
     }
 
-    public PortTick(int z) {
-        sleepSpeed = z;
-        t = 0;
-        codeTick = (int) (sleepSpeed * 0.02);
-        log.info("[VoxelPort] PortTick thread executing. Running at interval of " + sleepSpeed + "ms, with " + codeTick + " CodeTime each Tick");
+    public PortTick(final int z)
+    {
+        PortTick.sleepSpeed = z;
+        PortTick.time = 0;
+        PortTick.codeTick = (int) (PortTick.sleepSpeed * 0.02);
+        VoxelPort.log.info("PortTick thread executing. Running at interval of " + PortTick.sleepSpeed + "ms, with " + PortTick.codeTick + " CodeTime each Tick");
     }
 
-    public static void removeTicketsFor(String n) {
-        Set<Player> toRemove = new HashSet<Player>();
-        Set<Entry<Player, NewPort>> set = tickets.entrySet();
-        for (Entry<Player, NewPort> m : set) {
-            if (m.getValue().getName().equals(n)) {
-                m.getKey().sendMessage(ChatColor.DARK_GREEN + "The portal has been deleted. Your ticket expires.");
-                toRemove.add(m.getKey());
+    public static void removeTicketsFor(final String name)
+    {
+        final Set<Player> toRemove = new HashSet<Player>();
+        for (final Entry<Player, Port> entry : PortTick.tickets.entrySet())
+        {
+            if (entry.getValue().getName().equals(name))
+            {
+                entry.getKey().sendMessage(ChatColor.DARK_GREEN + "The portal has been deleted. Your ticket expires.");
+                toRemove.add(entry.getKey());
             }
         }
-        for (Player p : toRemove) {
-            tickets.remove(p);
+        for (final Player player : toRemove)
+        {
+            PortTick.tickets.remove(player);
         }
     }
 
-    public static void removeThread() {
-        for (Player pla : tickets.keySet()) {
-            pla.sendMessage(ChatColor.DARK_GREEN + "Your ticket expires.");
+    public static void removeThread()
+    {
+        for (final Player player : PortTick.tickets.keySet())
+        {
+            player.sendMessage(ChatColor.DARK_GREEN + "Your ticket expires.");
         }
-        tickets.clear();
-        usedTickets.clear();
+        PortTick.tickets.clear();
+        PortTick.usedTickets.clear();
     }
 
     @Override
-    public void run() {
-        try {
-            t += codeTick;
-            if (t >= 24000) {
-                t = 0;
+    public void run()
+    {
+        try
+        {
+            PortTick.time += PortTick.codeTick;
+            if (PortTick.time >= 24000)
+            {
+                PortTick.time = 0;
             }
-            if (!tickets.isEmpty()) {
-                Set<Entry<Player, NewPort>> set = tickets.entrySet();
-                for (Entry<Player, NewPort> m : set) {
-                    m.getValue().departPlayer(m.getKey(), t);
+            if (!PortTick.tickets.isEmpty())
+            {
+                final Set<Entry<Player, Port>> set = PortTick.tickets.entrySet();
+                for (final Entry<Player, Port> m : set)
+                {
+                    m.getValue().departPlayer(m.getKey(), PortTick.time);
                 }
-                if (!usedTickets.isEmpty()) {
-                    for (Player p : usedTickets) {
-                        tickets.remove(p);
+                if (!PortTick.usedTickets.isEmpty())
+                {
+                    for (final Player p : PortTick.usedTickets)
+                    {
+                        PortTick.tickets.remove(p);
                     }
-                    usedTickets.clear();
+                    PortTick.usedTickets.clear();
                 }
             }
-        } catch (Exception e) {
-            log.warning("[VoxelPort] Error occured in the PortTick Thread");
+        }
+        catch (final Exception e)
+        {
+            VoxelPort.log.warning("[VoxelPort] Error occurred in the PortTick Thread");
             e.printStackTrace();
         }
     }
 
-    public static void stop() {
-        removeThread();
+    public static void stop()
+    {
+        PortTick.removeThread();
     }
 }
